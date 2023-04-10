@@ -14,6 +14,7 @@ const register = document.querySelector(".btn-register");
 
 const register_form = document.querySelector(".form");
 
+const input = document.querySelector(".input");
 // 驗證欄位是否空值
 let register_verify = (e) => {
   if (email.value.trim() == "") {

@@ -4,7 +4,7 @@ const list = document.querySelector(".list");
 const user = document.querySelector(".user");
 const list_box = document.querySelector(".list-box");
 const empty = document.querySelector(".empty");
-
+const input = document.querySelector(".input");
 let data = [];
 
 function renderData() {
@@ -28,7 +28,7 @@ function renderData() {
 
 //新增代辦功能
 save.addEventListener("click", function (e) {
-  if (text.value == "") {
+  if (text.value.trim() == "") {
     alert("請輸入內容");
     return;
   }
@@ -37,6 +37,7 @@ save.addEventListener("click", function (e) {
   data.push(obj);
   renderData();
   switch_statues();
+  input.reset();
 });
 
 //刪除代辦功能
