@@ -65,7 +65,7 @@ const callSignUp = () => {
         alert("帳號註冊失敗，有可能有人用你的email註冊！");
       }
       register_form.reset();
-      location.href = "/index.html";
+      location.href = "index.html";
     })
     .catch((error) => {
       alert("此帳號密碼已存在，請重新註冊");

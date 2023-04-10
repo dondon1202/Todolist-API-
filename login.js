@@ -31,7 +31,7 @@ const signIn = () => {
         nickname = response.data.nickname;
         localStorage.setItem("authorization", token);
         localStorage.setItem("nickname", nickname);
-        location.href = "/todo.html";
+        location.href = "todo.html";
       }
     })
     .catch((error) => console.log(error));
