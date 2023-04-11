@@ -6,6 +6,8 @@ const list_box = document.querySelector(".list-box");
 const empty = document.querySelector(".empty");
 const input = document.querySelector(".input");
 const logoutBtn = document.querySelector(".logoutBtn");
+const edit = document.querySelector(".edit");
+const checkBox = document.querySelector(".checkbox");
 let data = [];
 
 const _url = "https://todoo.5xcamp.us";
@@ -61,11 +63,23 @@ const renderData = () => {
       return `
         <ul class="flex items-center justify-between border-b-2 py-4">
           <li class="flex">
-            <input class="flex h-[22px] w-[22px] cursor-pointer" type="checkbox"  />
-            <p class="ml-4">${item.content}</p>
+            <img class="checkbox flex h-[22px] w-[22px] cursor-pointer " type="checkbox" data-num="${
+              item.id
+            }" src="${
+        item.completed_at !== null
+          ? "./images/check.svg"
+          : "./images/checkbox.svg"
+      }" />
+            <p class="${
+              item.completed_at !== null
+                ? "ml-4 edit line-through"
+                : "ml-4 edit"
+            }">${item.content}</p>
           </li>
           <li>
-            <img src="images/Vector.svg" alt="" data-num="${item.id}" id="delete" class=" cursor-pointer"/>
+            <img src="images/Vector.svg" alt="" data-num="${
+              item.id
+            }" id="delete" class=" cursor-pointer"/>
           </li>
         </ul>
       `;
@@ -113,11 +127,12 @@ save.addEventListener("click", (e) => {
     });
 });
 
-//刪除todo
+// 刪除todo
 list.addEventListener("click", (e) => {
   if (e.target.getAttribute("id") !== "delete") {
     return;
   }
+  // 拿到todo列表的id
   const targetId = e.target.getAttribute("data-num");
 
   data = data.filter((item, index) => index !== Number(targetId));
@@ -142,7 +157,37 @@ list.addEventListener("click", (e) => {
     });
 });
 
+// 編輯todo
+// list.addEventListener("click", (e) => {
+//   if (e.target.getAttribute("class") !== "edit") {
+//     return;
+//   }
+//   // 拿到todo列表的id
+//   const targetId = e.target.getAttribute("data-num");
+
+//   data = data.filter((item, index) => index !== Number(targetId));
+//   renderData();
+//   switch_statues();
+//   console.log(e.target.parentNode);
+
+//   // console.log(targetId);
+//   const targetItem = data.filter((item) => item.id === targetId)[0];
+//   console.log(targetItem);
+
+//   axios
+//     .delete(`${_url}/todos/${targetId}`, {
+//       headers: {
+//         authorization: token,
+//       },
+//     })
+//     .then(() => {
+//       data.splice(data.indexOf(targetItem), 1);
+//       renderData();
+//       switch_statues();
+//     });
+// });
 // 判斷0筆跟有資料的時候切換背景圖
+
 const switch_statues = () => {
   if (data.length == 0) {
     list_box.classList.add("hidden");
@@ -175,4 +220,36 @@ const logout = () => {
 // 當登出被點擊
 logoutBtn.addEventListener("click", () => {
   logout();
+});
+
+// 切換狀態
+list.addEventListener("click", (e) => {
+  // if (e.target.getAttribute("id") !== "delete") {
+  //   return;
+  // }
+  // 拿到todo列表的id
+  const targetId = e.target.getAttribute("data-num");
+  let targetObj = data.filter((item) => item.id === targetId)[0]; // 找出被勾選的整筆資料
+  // data = data.filter((item, index) => index !== Number(targetId));
+  // renderData();
+  // switch_statues();
+  // console.log(e.target.parentNode);
+
+  // // console.log(targetId);
+  // const targetItem = data.filter((item) => item.id === targetId)[0];
+  // console.log(targetItem);
+
+  axios
+    .patch(`${_url}/todos/${targetId}/toggle`, "", {
+      headers: {
+        authorization: token,
+      },
+    })
+    .then((res) => {
+      console.log("res", res);
+      data.splice(data.indexOf(targetObj), 1, res.data); //從data中把被勾選的資料拿掉，把新的資料放進去
+      console.log("data >>>", data);
+      renderData();
+      switch_statues();
+    });
 });
