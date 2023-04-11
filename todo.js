@@ -11,6 +11,7 @@ let data = [];
 const _url = "https://todoo.5xcamp.us";
 const token = localStorage.getItem("authorization");
 const nickname = localStorage.getItem("nickname");
+console.log(token);
 
 // 登出功能
 const logout = () => {
@@ -36,21 +37,38 @@ logoutBtn.addEventListener("click", () => {
   logout();
 });
 
-// 右上角帶入LocalStorage username
-user.innerHTML = nickname;
-
-// 0筆跟有資料切換背景
-const switch_statues = () => {
-  if (data.length == 0) {
-    list_box.classList.add("hidden");
-    empty.classList.remove("hidden");
-  } else if (data.length > 0) {
-    list_box.classList.remove("hidden");
-    empty.classList.add("hidden");
-  }
+// 取得 todo
+const getTodo = () => {
+  axios
+    .get(`${_url}/todos`, {
+      headers: {
+        authorization: token,
+      },
+    })
+    .then((response) => {
+      console.log(response.data);
+      data = response.data.todos;
+      renderData(data);
+      switch_statues();
+    });
 };
 
-// 組字串
+// 在一進入網頁時就呼叫 getTodo()
+axios
+  .get(`${_url}/check`, {
+    headers: {
+      authorization: token,
+    },
+  })
+  .then(() => {
+    user.textContent = `${nickname}的待辦`;
+    getTodo();
+  })
+  .catch(() => {
+    location.href = "index.html";
+  });
+
+// 渲染TODO
 const renderData = () => {
   const str = data
     .map((item, index) => {
@@ -70,7 +88,7 @@ const renderData = () => {
   list.innerHTML = str;
 };
 
-//新增代辦功能
+// 新增todo
 save.addEventListener("click", (e) => {
   if (text.value.trim() == "") {
     alert("請輸入內容");
@@ -78,13 +96,38 @@ save.addEventListener("click", (e) => {
   }
   const obj = {};
   obj.content = text.value;
+  console.log(obj);
   data.push(obj);
   renderData();
   switch_statues();
+
+  let addObj = {
+    todo: {
+      content: text.value,
+    },
+  };
+
+  //輸入後表單清空
   input.reset();
+
+  axios
+    .post(`${_url}/todos`, addObj, {
+      headers: {
+        authorization: token,
+      },
+    })
+    .then((response) => {
+      // console.log(response.data);
+      console.log(response);
+      data.push(response.data);
+      getTodo();
+    })
+    .catch((error) => {
+      alert(error);
+    });
 });
 
-//刪除代辦功能
+//刪除todo
 list.addEventListener("click", (e) => {
   if (e.target.getAttribute("id") !== "delete") {
     return;
@@ -95,3 +138,14 @@ list.addEventListener("click", (e) => {
   renderData();
   switch_statues();
 });
+
+// 判斷0筆跟有資料的時候切換背景圖
+const switch_statues = () => {
+  if (data.length == 0) {
+    list_box.classList.add("hidden");
+    empty.classList.remove("hidden");
+  } else if (data.length > 0) {
+    list_box.classList.remove("hidden");
+    empty.classList.add("hidden");
+  }
+};
