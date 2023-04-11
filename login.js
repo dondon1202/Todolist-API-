@@ -42,3 +42,13 @@ sign_in.addEventListener("click", () => {
   vertify();
   signIn();
 });
+
+// ENTER 登入
+const enter = (e) => {
+  if (e.keyCode !== 13) {
+    return;
+  }
+  vertify();
+  signIn();
+};
+document.addEventListener("keydown", enter);

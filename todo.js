@@ -13,29 +13,14 @@ const token = localStorage.getItem("authorization");
 const nickname = localStorage.getItem("nickname");
 console.log(token);
 
-// 登出功能
-const logout = () => {
-  axios
-    .delete(`${_url}/users/sign_out`, {
-      headers: {
-        authorization: token,
-      },
-    })
-    .then((response) => {
-      localStorage.removeItem("authorization");
-      localStorage.removeItem("nickname");
-      alert(response.data.message);
-      location.href = "index.html";
-    })
-    .catch((error) => {
-      console.log(error);
-      alert("登出失敗");
-    });
-};
-// 當登出被點擊
-logoutBtn.addEventListener("click", () => {
-  logout();
-});
+// 檢查是否是登入狀態 沒有token可以自動回到登入頁面 但是登入後目前無法使用功能 //
+// const checkLocal = () => {
+//   if (token == null || nickname == null) {
+//     location.href = "index.html";
+//   }
+//   getTodo();
+// };
+// checkLocal();
 
 // 取得 todo
 const getTodo = () => {
@@ -153,6 +138,7 @@ list.addEventListener("click", (e) => {
     .then(() => {
       data.splice(data.indexOf(targetItem), 1);
       renderData();
+      switch_statues();
     });
 });
 
@@ -166,3 +152,27 @@ const switch_statues = () => {
     empty.classList.add("hidden");
   }
 };
+
+// 登出功能
+const logout = () => {
+  axios
+    .delete(`${_url}/users/sign_out`, {
+      headers: {
+        authorization: token,
+      },
+    })
+    .then((response) => {
+      localStorage.removeItem("authorization");
+      localStorage.removeItem("nickname");
+      alert(response.data.message);
+      location.href = "index.html";
+    })
+    .catch((error) => {
+      console.log(error);
+      alert("登出失敗");
+    });
+};
+// 當登出被點擊
+logoutBtn.addEventListener("click", () => {
+  logout();
+});
