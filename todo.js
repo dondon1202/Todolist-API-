@@ -46,7 +46,7 @@ const getTodo = () => {
       },
     })
     .then((response) => {
-      console.log(response.data);
+      // console.log(response.data);
       data = response.data.todos;
       renderData(data);
       switch_statues();
@@ -72,6 +72,7 @@ axios
 const renderData = () => {
   const str = data
     .map((item, index) => {
+      // console.log(item.id);
       return `
         <ul class="flex items-center justify-between border-b-2 py-4">
           <li class="flex">
@@ -79,7 +80,7 @@ const renderData = () => {
             <p class="ml-4">${item.content}</p>
           </li>
           <li>
-            <img src="images/Vector.svg" alt="" data-num="${index}" id="delete" class=" cursor-pointer"/>
+            <img src="images/Vector.svg" alt="" data-num="${item.id}" id="delete" class=" cursor-pointer"/>
           </li>
         </ul>
       `;
@@ -132,11 +133,27 @@ list.addEventListener("click", (e) => {
   if (e.target.getAttribute("id") !== "delete") {
     return;
   }
-  const num = e.target.getAttribute("data-num");
-  console.log(num);
-  data = data.filter((item, index) => index !== Number(num));
+  const targetId = e.target.getAttribute("data-num");
+
+  data = data.filter((item, index) => index !== Number(targetId));
   renderData();
   switch_statues();
+  console.log(e.target.parentNode);
+
+  // console.log(targetId);
+  const targetItem = data.filter((item) => item.id === targetId)[0];
+  console.log(targetItem);
+
+  axios
+    .delete(`${_url}/todos/${targetId}`, {
+      headers: {
+        authorization: token,
+      },
+    })
+    .then(() => {
+      data.splice(data.indexOf(targetItem), 1);
+      renderData();
+    });
 });
 
 // 判斷0筆跟有資料的時候切換背景圖
