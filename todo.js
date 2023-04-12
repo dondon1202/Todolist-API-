@@ -8,6 +8,8 @@ const input = document.querySelector(".input");
 const logoutBtn = document.querySelector(".logoutBtn");
 const edit = document.querySelector(".edit");
 const checkBox = document.querySelector(".checkbox");
+const countDataDom = document.querySelector(".countdata");
+
 let data = [];
 
 const _url = "https://todoo.5xcamp.us";
@@ -37,6 +39,7 @@ const getTodo = () => {
       data = response.data.todos;
       renderData(data);
       switch_statues();
+      console.log(data.length);
     });
 };
 
@@ -82,14 +85,24 @@ const renderData = () => {
             }" id="delete" class=" cursor-pointer"/>
           </li>
         </ul>
+
       `;
     })
     .join("");
+
+  // 計算有幾筆待完成事項
+  const countData_str = `          
+          <div class="flex justify-between mt-4">
+            <p>${data.length}個待完成事項</p>
+            <p class="cursor-pointer text-[#9F9A91] cleanBtn">清除已完成項目</p>
+          </div>`;
+
   list.innerHTML = str;
+  countDataDom.innerHTML = countData_str;
 };
 
 // 新增todo
-save.addEventListener("click", (e) => {
+const addtodo = () => {
   if (text.value.trim() == "") {
     alert("請輸入內容");
     return;
@@ -125,7 +138,8 @@ save.addEventListener("click", (e) => {
     .catch((error) => {
       alert(error);
     });
-});
+};
+save.addEventListener("click", addtodo);
 
 // 刪除todo
 list.addEventListener("click", (e) => {
@@ -251,5 +265,15 @@ list.addEventListener("click", (e) => {
       console.log("data >>>", data);
       renderData();
       switch_statues();
+      // console.log(data);
     });
 });
+
+// ENTER 新增todo
+const enter = (e) => {
+  if (e.keyCode !== 13) {
+    return;
+  }
+  addtodo();
+};
+document.addEventListener("keydown", enter);

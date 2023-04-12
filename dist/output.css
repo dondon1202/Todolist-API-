@@ -711,6 +711,10 @@ video {
   margin-top: 1.5rem;
 }
 
+.mt-4 {
+  margin-top: 1rem;
+}
+
 .box-border {
   box-sizing: border-box;
 }
@@ -2100,6 +2104,11 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
+}
+
+.text-\[\#9F9A91\] {
+  --tw-text-opacity: 1;
+  color: rgb(159 154 145 / var(--tw-text-opacity));
 }
 
 .underline {
