@@ -9,7 +9,7 @@ const logoutBtn = document.querySelector(".logoutBtn");
 const edit = document.querySelector(".edit");
 const checkBox = document.querySelector(".checkbox");
 const countDataDom = document.querySelector(".countdata");
-
+const cleanBtn = document.querySelector(".cleanbtn");
 let data = [];
 
 const _url = "https://todoo.5xcamp.us";
@@ -39,7 +39,7 @@ const getTodo = () => {
       data = response.data.todos;
       renderData(data);
       switch_statues();
-      console.log(data.length);
+      // console.log(data.length);
     });
 };
 
@@ -94,7 +94,7 @@ const renderData = () => {
   const countData_str = `          
           <div class="flex justify-between mt-4">
             <p>${data.length}個待完成事項</p>
-            <p class="cursor-pointer text-[#9F9A91] cleanBtn">清除已完成項目</p>
+            <p class="cursor-pointer text-[#9F9A91] cleanbtn" name="cleanbtn">清除已完成項目</p>
           </div>`;
 
   list.innerHTML = str;
@@ -109,7 +109,7 @@ const addtodo = () => {
   }
   const obj = {};
   obj.content = text.value;
-  console.log(obj);
+  // console.log(obj);
   data.push(obj);
   renderData();
   switch_statues();
@@ -131,7 +131,7 @@ const addtodo = () => {
     })
     .then((response) => {
       // console.log(response.data);
-      console.log(response);
+      // console.log(response);
       data.push(response.data);
       getTodo();
     })
@@ -150,11 +150,39 @@ list.addEventListener("click", (e) => {
   const targetId = e.target.getAttribute("data-num");
 
   data = data.filter((item, index) => index !== Number(targetId));
-  renderData();
-  switch_statues();
-  console.log(e.target.parentNode);
 
+  // console.log(e.target.parentNode);
   // console.log(targetId);
+
+  const targetItem = data.filter((item) => item.id === targetId)[0];
+  console.log(targetItem);
+
+  axios
+    .delete(`${_url}/todos/${targetId}`, {
+      headers: {
+        authorization: token,
+      },
+    })
+    .then(() => {
+      data.splice(data.indexOf(targetItem), 1);
+      renderData();
+      switch_statues();
+    });
+});
+
+// 刪除已完成todo
+cleanBtn.addEventListener("click", (e) => {
+  if (e.target.getAttribute("name") !== "cleanbtn") {
+    return;
+  }
+  // 拿到todo列表的id
+  const targetId = e.target.getAttribute("data-num");
+
+  data = data.filter((item, index) => index !== Number(targetId));
+
+  // console.log(e.target.parentNode);
+  // console.log(targetId);
+
   const targetItem = data.filter((item) => item.id === targetId)[0];
   console.log(targetItem);
 
@@ -238,9 +266,9 @@ logoutBtn.addEventListener("click", () => {
 
 // 切換狀態
 list.addEventListener("click", (e) => {
-  // if (e.target.getAttribute("id") !== "delete") {
-  //   return;
-  // }
+  if (e.target.getAttribute("type") !== "checkbox") {
+    return;
+  }
   // 拿到todo列表的id
   const targetId = e.target.getAttribute("data-num");
   let targetObj = data.filter((item) => item.id === targetId)[0]; // 找出被勾選的整筆資料
