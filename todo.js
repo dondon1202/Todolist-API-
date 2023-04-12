@@ -9,22 +9,13 @@ const logoutBtn = document.querySelector(".logoutBtn");
 const edit = document.querySelector(".edit");
 const checkBox = document.querySelector(".checkbox");
 const countDataDom = document.querySelector(".countdata");
-const cleanBtn = document.querySelector(".cleanbtn");
+
 let data = [];
 
 const _url = "https://todoo.5xcamp.us";
 const token = localStorage.getItem("authorization");
 const nickname = localStorage.getItem("nickname");
 console.log(token);
-
-// 檢查是否是登入狀態 沒有token可以自動回到登入頁面 但是登入後目前無法使用功能 //
-// const checkLocal = () => {
-//   if (token == null || nickname == null) {
-//     location.href = "index.html";
-//   }
-//   getTodo();
-// };
-// checkLocal();
 
 // 取得 todo
 const getTodo = () => {
@@ -94,7 +85,7 @@ const renderData = () => {
   const countData_str = `          
           <div class="flex justify-between mt-4">
             <p>${data.length}個待完成事項</p>
-            <p class="cursor-pointer text-[#9F9A91] cleanbtn" name="cleanbtn">清除已完成項目</p>
+            <p class="cursor-pointer text-[#9F9A91] clean" name="cleanbtn">清除已完成項目</p>
           </div>`;
 
   list.innerHTML = str;
@@ -149,14 +140,14 @@ list.addEventListener("click", (e) => {
   // 拿到todo列表的id
   const targetId = e.target.getAttribute("data-num");
 
+  // 過濾出新陣列，刪除索引為 targetId 的元素
   data = data.filter((item, index) => index !== Number(targetId));
 
-  // console.log(e.target.parentNode);
-  // console.log(targetId);
-
+  // 根據 targetId 找到要刪除的元素
   const targetItem = data.filter((item) => item.id === targetId)[0];
   console.log(targetItem);
 
+  // 使用 axios 發送刪除請求
   axios
     .delete(`${_url}/todos/${targetId}`, {
       headers: {
@@ -164,28 +155,29 @@ list.addEventListener("click", (e) => {
       },
     })
     .then(() => {
+      // 從陣列中刪除目標元素
       data.splice(data.indexOf(targetItem), 1);
+      // 重新渲染列表
       renderData();
+
       switch_statues();
     });
 });
 
 // 刪除已完成todo
-cleanBtn.addEventListener("click", (e) => {
+countDataDom.addEventListener("click", (e) => {
   if (e.target.getAttribute("name") !== "cleanbtn") {
     return;
   }
-  // 拿到todo列表的id
+  拿到todo列表的id;
   const targetId = e.target.getAttribute("data-num");
-
+  // 過濾出新陣列，刪除索引為 targetId 的元素
   data = data.filter((item, index) => index !== Number(targetId));
-
-  // console.log(e.target.parentNode);
-  // console.log(targetId);
-
+  console.log(item);
+  // 根據 targetId 找到要刪除的元素
   const targetItem = data.filter((item) => item.id === targetId)[0];
   console.log(targetItem);
-
+  // 使用 axios 發送刪除請求
   axios
     .delete(`${_url}/todos/${targetId}`, {
       headers: {
@@ -193,7 +185,9 @@ cleanBtn.addEventListener("click", (e) => {
       },
     })
     .then(() => {
+      // 從陣列中刪除目標元素
       data.splice(data.indexOf(targetItem), 1);
+      // 重新渲染列表
       renderData();
       switch_statues();
     });
@@ -228,6 +222,7 @@ cleanBtn.addEventListener("click", (e) => {
 //       switch_statues();
 //     });
 // });
+
 // 判斷0筆跟有資料的時候切換背景圖
 
 const switch_statues = () => {
