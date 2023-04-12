@@ -48,9 +48,15 @@
             class="list-box m-4 mx-auto hidden w-[100%] rounded-lg border-2 bg-white py-4"
           >
             <ul class="flex justify-around border-b-2 px-10 pb-2">
-              <li class="">全部</li>
-              <li class="">待完成</li>
-              <li class="">已完成</li>
+              <li
+                class="allbtn tab--active cursor-pointer"
+                id="allBtn"
+                style="color: red"
+              >
+                全部
+              </li>
+              <li class="notdonebtn cursor-pointer" id="notDoneBtn">待完成</li>
+              <li class="donebtn cursor-pointer" id="doneBtn">已完成</li>
             </ul>
             <div class="list px-10 pt-2"></div>
             <div class="countdata px-10"></div>
@@ -68,6 +74,13 @@
           #ffffff 53.45%,
           #ffffff 94.32%
         );
+      }
+      .tab--active {
+        border-bottom-width: 2px !important;
+        --tw-border-opacity: 1 !important;
+        border-color: rgb(51 51 51 / var(--tw-border-opacity)) !important;
+        --tw-text-opacity: 1 !important;
+        color: rgb(51 51 51 / var(--tw-text-opacity)) !important;
       }
     </style>
     <script

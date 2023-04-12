@@ -703,16 +703,16 @@ video {
   margin-top: 0.5rem;
 }
 
+.mt-4 {
+  margin-top: 1rem;
+}
+
 .mt-5 {
   margin-top: 1.25rem;
 }
 
 .mt-6 {
   margin-top: 1.5rem;
-}
-
-.mt-4 {
-  margin-top: 1rem;
 }
 
 .box-border {
@@ -2086,6 +2086,11 @@ video {
   color: rgb(51 102 153 / .35);
 }
 
+.text-\[\#9F9A91\] {
+  --tw-text-opacity: 1;
+  color: rgb(159 154 145 / var(--tw-text-opacity));
+}
+
 .text-blue-500 {
   --tw-text-opacity: 1;
   color: rgb(59 130 246 / var(--tw-text-opacity));
@@ -2104,11 +2109,6 @@ video {
 .text-white {
   --tw-text-opacity: 1;
   color: rgb(255 255 255 / var(--tw-text-opacity));
-}
-
-.text-\[\#9F9A91\] {
-  --tw-text-opacity: 1;
-  color: rgb(159 154 145 / var(--tw-text-opacity));
 }
 
 .underline {

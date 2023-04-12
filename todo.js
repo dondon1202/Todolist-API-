@@ -10,12 +10,56 @@ const edit = document.querySelector(".edit");
 const checkBox = document.querySelector(".checkbox");
 const countDataDom = document.querySelector(".countdata");
 
+let current_tab = "all"; // all, notDone, done
 let data = [];
+
+// const allBtn = document.querySelector(".allbtn");
+// const notDoneBtn = document.querySelector(".notdonebtn");
+// const doneBtn = document.querySelector(".donebtn");
 
 const _url = "https://todoo.5xcamp.us";
 const token = localStorage.getItem("authorization");
 const nickname = localStorage.getItem("nickname");
 console.log(token);
+
+// 判斷0筆跟有資料的時候切換背景圖
+
+const switch_statues = () => {
+  if (data.length == 0) {
+    list_box.classList.add("hidden");
+    empty.classList.remove("hidden");
+  } else if (data.length > 0) {
+    list_box.classList.remove("hidden");
+    empty.classList.add("hidden");
+    const cleanBtn = document.querySelector(".cleanbtn");
+    cleanBtn.addEventListener("click", () => {
+      cleanDoneTodo(data);
+    });
+    document.getElementById("allBtn").addEventListener("click", (e) => {
+      document.getElementById("allBtn").style = "color:red";
+      document.getElementById("doneBtn").style = "";
+      document.getElementById("notDoneBtn").style = "";
+      current_tab = "allBtn";
+      renderData();
+    });
+
+    document.getElementById("notDoneBtn").addEventListener("click", (e) => {
+      document.getElementById("notDoneBtn").style = "color:red";
+      document.getElementById("allBtn").style = "";
+      document.getElementById("doneBtn").style = "";
+      current_tab = "notDoneBtn";
+      renderData();
+    });
+
+    document.getElementById("doneBtn").addEventListener("click", (e) => {
+      document.getElementById("doneBtn").style = "color:red";
+      document.getElementById("allBtn").style = "";
+      document.getElementById("notDoneBtn").style = "";
+      current_tab = "doneBtn";
+      renderData();
+    });
+  }
+};
 
 // 取得 todo
 const getTodo = () => {
@@ -52,6 +96,7 @@ axios
 // 渲染TODO
 const renderData = () => {
   const str = data
+    .filter(filterDisplayData)
     .map((item, index) => {
       // console.log(item.id);
       return `
@@ -80,13 +125,22 @@ const renderData = () => {
       `;
     })
     .join("");
+  let count = "";
+  if (current_tab === "allBtn" || current_tab === "notDoneBtn") {
+    count = `<p>${notDoneLength()}個待完成事項</p>`;
+  } else {
+    let doneLength = data.filter(
+      (item) => item.completed_at !== null && item.completed_at !== undefined
+    ).length;
+    count = `<p>${doneLength}個已完成事項</p>`;
+  }
 
-  // 計算有幾筆待完成事項
   const countData_str = `          
           <div class="flex justify-between mt-4">
-            <p>${data.length}個待完成事項</p>
-            <p class="cursor-pointer text-[#9F9A91] clean" name="cleanbtn">清除已完成項目</p>
+           ${count}
+            <p class="cursor-pointer text-[#9F9A91] cleanbtn" name="cleanbtn">清除已完成項目</p>
           </div>`;
+  // 計算有幾筆待完成事項
 
   list.innerHTML = str;
   countDataDom.innerHTML = countData_str;
@@ -145,8 +199,9 @@ list.addEventListener("click", (e) => {
 
   // 根據 targetId 找到要刪除的元素
   const targetItem = data.filter((item) => item.id === targetId)[0];
-  console.log(targetItem);
-
+  const targetItem2 = data.find((item) => item.id === targetId);
+  console.log("targetItem:曉明", targetItem);
+  console.log("[targetItem2:]", targetItem2);
   // 使用 axios 發送刪除請求
   axios
     .delete(`${_url}/todos/${targetId}`, {
@@ -165,74 +220,28 @@ list.addEventListener("click", (e) => {
 });
 
 // 刪除已完成todo
-countDataDom.addEventListener("click", (e) => {
-  if (e.target.getAttribute("name") !== "cleanbtn") {
-    return;
-  }
-  拿到todo列表的id;
-  const targetId = e.target.getAttribute("data-num");
-  // 過濾出新陣列，刪除索引為 targetId 的元素
-  data = data.filter((item, index) => index !== Number(targetId));
-  console.log(item);
-  // 根據 targetId 找到要刪除的元素
-  const targetItem = data.filter((item) => item.id === targetId)[0];
-  console.log(targetItem);
-  // 使用 axios 發送刪除請求
-  axios
-    .delete(`${_url}/todos/${targetId}`, {
-      headers: {
-        authorization: token,
-      },
+const cleanDoneTodo = (data) => {
+  // 篩選需要被刪除的清單(已完成)
+  let cleanList = data.filter(
+    (item) => item.completed_at !== undefined && item.completed_at !== null
+  );
+  // console.log(data);
+
+  Promise.all(
+    cleanList.map((item) => {
+      return axios.delete(`${_url}/todos/${item.id}`, {
+        headers: {
+          authorization: token,
+        },
+      });
     })
-    .then(() => {
-      // 從陣列中刪除目標元素
-      data.splice(data.indexOf(targetItem), 1);
-      // 重新渲染列表
-      renderData();
-      switch_statues();
+  ).then(() => {
+    cleanList.map((item) => {
+      // 0:3 1:2 2:1
+      data.splice(data.indexOf(item), 1); // data = 3,2,1,8bQ
     });
-});
-
-// 編輯todo
-// list.addEventListener("click", (e) => {
-//   if (e.target.getAttribute("class") !== "edit") {
-//     return;
-//   }
-//   // 拿到todo列表的id
-//   const targetId = e.target.getAttribute("data-num");
-
-//   data = data.filter((item, index) => index !== Number(targetId));
-//   renderData();
-//   switch_statues();
-//   console.log(e.target.parentNode);
-
-//   // console.log(targetId);
-//   const targetItem = data.filter((item) => item.id === targetId)[0];
-//   console.log(targetItem);
-
-//   axios
-//     .delete(`${_url}/todos/${targetId}`, {
-//       headers: {
-//         authorization: token,
-//       },
-//     })
-//     .then(() => {
-//       data.splice(data.indexOf(targetItem), 1);
-//       renderData();
-//       switch_statues();
-//     });
-// });
-
-// 判斷0筆跟有資料的時候切換背景圖
-
-const switch_statues = () => {
-  if (data.length == 0) {
-    list_box.classList.add("hidden");
-    empty.classList.remove("hidden");
-  } else if (data.length > 0) {
-    list_box.classList.remove("hidden");
-    empty.classList.add("hidden");
-  }
+    renderData();
+  });
 };
 
 // 登出功能
@@ -299,4 +308,22 @@ const enter = (e) => {
   }
   addtodo();
 };
+
+const notDoneLength = () => {
+  return data.filter(
+    (item) => item.completed_at === null || item.completed_at === undefined
+  ).length;
+};
+
+const filterDisplayData = (item) => {
+  switch (current_tab) {
+    case "allBtn":
+      return true;
+    case "notDoneBtn":
+      return item.completed_at === null || item.completed_at === undefined;
+    case "doneBtn":
+      return !(item.completed_at === null || item.completed_at === undefined);
+  }
+};
+
 document.addEventListener("keydown", enter);
