@@ -10,7 +10,7 @@ const edit = document.querySelector(".edit");
 const checkBox = document.querySelector(".checkbox");
 const countDataDom = document.querySelector(".countdata");
 
-let current_tab = "all"; // all, notDone, done
+let current_tab = "allBtn"; // all, notDone, done
 let data = [];
 
 // const allBtn = document.querySelector(".allbtn");
@@ -33,28 +33,73 @@ const switch_statues = () => {
     empty.classList.add("hidden");
     const cleanBtn = document.querySelector(".cleanbtn");
     cleanBtn.addEventListener("click", () => {
-      cleanDoneTodo(data);
+      cleanDoneTodo();
     });
     document.getElementById("allBtn").addEventListener("click", (e) => {
-      document.getElementById("allBtn").style = "color:red";
-      document.getElementById("doneBtn").style = "";
-      document.getElementById("notDoneBtn").style = "";
+      allBtn.classList.add(
+        "border-b-4",
+        "border-black",
+        "text-[20px]",
+        "font-black"
+      );
+      doneBtn.classList.remove(
+        "border-b-4",
+        "border-black",
+        "text-[20px]",
+        "font-black"
+      );
+      notDoneBtn.classList.remove(
+        "border-b-4",
+        "border-black",
+        "text-[20px]",
+        "font-black"
+      );
       current_tab = "allBtn";
       renderData();
     });
 
     document.getElementById("notDoneBtn").addEventListener("click", (e) => {
-      document.getElementById("notDoneBtn").style = "color:red";
-      document.getElementById("allBtn").style = "";
-      document.getElementById("doneBtn").style = "";
+      notDoneBtn.classList.add(
+        "border-b-4",
+        "border-black",
+        "text-[20px]",
+        "font-black"
+      );
+      allBtn.classList.remove(
+        "border-b-4",
+        "border-black",
+        "text-[20px]",
+        "font-black"
+      );
+      doneBtn.classList.remove(
+        "border-b-4",
+        "border-black",
+        "text-[20px]",
+        "font-black"
+      );
       current_tab = "notDoneBtn";
       renderData();
     });
 
     document.getElementById("doneBtn").addEventListener("click", (e) => {
-      document.getElementById("doneBtn").style = "color:red";
-      document.getElementById("allBtn").style = "";
-      document.getElementById("notDoneBtn").style = "";
+      doneBtn.classList.add(
+        "border-b-4",
+        "border-black",
+        "text-[20px]",
+        "font-black"
+      );
+      allBtn.classList.remove(
+        "border-b-4",
+        "border-black",
+        "text-[20px]",
+        "font-black"
+      );
+      notDoneBtn.classList.remove(
+        "border-b-4",
+        "border-black",
+        "text-[20px]",
+        "font-black"
+      );
       current_tab = "doneBtn";
       renderData();
     });
@@ -198,10 +243,8 @@ list.addEventListener("click", (e) => {
   data = data.filter((item, index) => index !== Number(targetId));
 
   // 根據 targetId 找到要刪除的元素
-  const targetItem = data.filter((item) => item.id === targetId)[0];
   const targetItem2 = data.find((item) => item.id === targetId);
-  console.log("targetItem:曉明", targetItem);
-  console.log("[targetItem2:]", targetItem2);
+
   // 使用 axios 發送刪除請求
   axios
     .delete(`${_url}/todos/${targetId}`, {
@@ -220,7 +263,7 @@ list.addEventListener("click", (e) => {
 });
 
 // 刪除已完成todo
-const cleanDoneTodo = (data) => {
+const cleanDoneTodo = () => {
   // 篩選需要被刪除的清單(已完成)
   let cleanList = data.filter(
     (item) => item.completed_at !== undefined && item.completed_at !== null
@@ -236,10 +279,9 @@ const cleanDoneTodo = (data) => {
       });
     })
   ).then(() => {
-    cleanList.map((item) => {
-      // 0:3 1:2 2:1
-      data.splice(data.indexOf(item), 1); // data = 3,2,1,8bQ
-    });
+    data = data.filter(
+      (item) => item.completed_at === undefined || item.completed_at === null
+    );
     renderData();
   });
 };
